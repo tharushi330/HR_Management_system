@@ -1,7 +1,6 @@
 package edu.icet.ecom.dto;
 
 import edu.icet.ecom.util.Department;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
