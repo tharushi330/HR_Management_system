@@ -1,4 +1,47 @@
 package edu.icet.ecom.controller;
 
+import edu.icet.ecom.dto.EmployeeDTO;
+import edu.icet.ecom.service.EmployeeService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/employees")
+@RequiredArgsConstructor
+@CrossOrigin
 public class EmployeeController {
+    private final EmployeeService employeeService;
+
+    @PostMapping("/add")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void addEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
+        employeeService.createEmployee(employeeDTO);
+    }
+
+    @GetMapping("/get-all")
+    public List<EmployeeDTO> getAllEmployees() {
+        return employeeService.getAllEmployees();
+    }
+
+    @DeleteMapping("/delete/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteEmployee(@PathVariable Long id) {
+        employeeService.deleteEmployee(id);
+    }
+
+    @PutMapping("/update")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void updateEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
+        employeeService.updateEmployee(employeeDTO.getId(), employeeDTO);
+    }
+
+    @GetMapping("/search-by-id/{id}")
+    public EmployeeDTO searchEmployeeById(@PathVariable Long id) {
+        return employeeService.searchEmployeeById(id);
+    }
 }
