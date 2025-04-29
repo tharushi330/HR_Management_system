@@ -4,7 +4,6 @@ import edu.icet.ecom.dto.EmployeeDTO;
 import edu.icet.ecom.entity.EmployeeEntity;
 import edu.icet.ecom.repository.EmployeeRepository;
 import edu.icet.ecom.service.EmployeeService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -34,20 +33,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeDTO updateEmployee(EmployeeDTO employeeDTO) {
-        Long id = employeeDTO.getId();
-        Optional<EmployeeEntity> optionalEmployee = employeeRepository.findById(id);
-        if (optionalEmployee.isEmpty()) {
-            throw new RuntimeException("Employee not found with id: " + id);
+    public void updateEmployee(EmployeeDTO employeeDTO) {
+        Optional<EmployeeEntity> optionalEmployee = employeeRepository.findById(employeeDTO.getId());
+
+        if (optionalEmployee.isPresent()) {
+            EmployeeEntity existingEmployee = optionalEmployee.get();
+
+            existingEmployee.setName(employeeDTO.getName());
+            existingEmployee.setEmail(employeeDTO.getEmail());
+            existingEmployee.setDepartment(employeeDTO.getDepartment());
+
+            employeeRepository.save(existingEmployee);
+        } else {
+            throw new RuntimeException("Employee with ID " + employeeDTO.getId() + " not found");
         }
-
-        EmployeeEntity existing = optionalEmployee.get();
-        existing.setName(employeeDTO.getName());
-        existing.setEmail(employeeDTO.getEmail());
-        existing.setDepartment(employeeDTO.getDepartment());
-
-        EmployeeEntity updated = employeeRepository.save(existing);
-        return modelMapper.map(updated, EmployeeDTO.class);
     }
 
     @Override

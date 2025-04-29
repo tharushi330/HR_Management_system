@@ -34,10 +34,16 @@ public class EmployeeController {
         employeeService.deleteEmployee(id);
     }
 
-    @PutMapping("/update")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public EmployeeDTO updateEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
-        return employeeService.updateEmployee(employeeDTO);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<String> updateEmployee(@PathVariable Long id, @RequestBody EmployeeDTO employeeDTO) {
+        try {
+            employeeDTO.setId(id);
+            employeeService.updateEmployee(employeeDTO);
+            return ResponseEntity.ok("Employee updated successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error updating employee");
+        }
     }
 
 
