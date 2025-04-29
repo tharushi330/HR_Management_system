@@ -19,8 +19,13 @@ public class EmployeeController {
 
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
-        employeeService.createEmployee(employeeDTO);
+    public ResponseEntity<String> addEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
+        try {
+            employeeService.createEmployee(employeeDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Employee created successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping("/get-all")
@@ -40,12 +45,12 @@ public class EmployeeController {
             employeeDTO.setId(id);
             employeeService.updateEmployee(employeeDTO);
             return ResponseEntity.ok("Employee updated successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error updating employee");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating employee");
         }
     }
-
 
     @GetMapping("/search-by-id/{id}")
     public EmployeeDTO searchEmployeeById(@PathVariable Long id) {

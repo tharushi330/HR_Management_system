@@ -3,6 +3,7 @@ package edu.icet.ecom.entity;
 import edu.icet.ecom.util.Department;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -38,6 +39,7 @@ public class EmployeeEntity {
     @Column(unique = true)
     private String email;
 
+    @NotNull(message = "Department is required")
     @Enumerated(EnumType.STRING)
     private Department department;
 
@@ -46,6 +48,5 @@ public class EmployeeEntity {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
 
 }

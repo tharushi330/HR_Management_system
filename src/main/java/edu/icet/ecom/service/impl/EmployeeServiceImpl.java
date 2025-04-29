@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,8 +22,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeDTO createEmployee(EmployeeDTO employeeDTO) {
+        if (employeeRepository.existsByEmail(employeeDTO.getEmail())) {
+            throw new IllegalArgumentException("Email already exists!");
+        }
         EmployeeEntity entity = modelMapper.map(employeeDTO, EmployeeEntity.class);
-        return modelMapper.map(employeeRepository.save(entity), EmployeeDTO.class);
+
+        entity.setCreatedAt(LocalDateTime.now());
+        EmployeeEntity savedEntity = employeeRepository.save(entity);
+        return modelMapper.map(savedEntity, EmployeeDTO.class);
     }
 
     @Override
@@ -33,17 +40,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public void updateEmployee(EmployeeDTO employeeDTO) {
+    public EmployeeDTO updateEmployee(EmployeeDTO employeeDTO) {
         Optional<EmployeeEntity> optionalEmployee = employeeRepository.findById(employeeDTO.getId());
-
         if (optionalEmployee.isPresent()) {
             EmployeeEntity existingEmployee = optionalEmployee.get();
+
+            if (!existingEmployee.getEmail().equals(employeeDTO.getEmail()) && employeeRepository.existsByEmail(employeeDTO.getEmail())) {
+                throw new IllegalArgumentException("Email already exists!");
+            }
 
             existingEmployee.setName(employeeDTO.getName());
             existingEmployee.setEmail(employeeDTO.getEmail());
             existingEmployee.setDepartment(employeeDTO.getDepartment());
+            existingEmployee.setUpdatedAt(LocalDateTime.now());
 
             employeeRepository.save(existingEmployee);
+            return modelMapper.map(existingEmployee, EmployeeDTO.class);
         } else {
             throw new RuntimeException("Employee with ID " + employeeDTO.getId() + " not found");
         }
@@ -51,10 +63,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
         public void deleteEmployee (Long id){
-            if (!employeeRepository.existsById(id)) {
-                throw new RuntimeException("Employee not found with id: " + id);
+        if (!employeeRepository.existsById(id)) {
+            throw new RuntimeException("Employee not found with id: " + id);
             }
-            employeeRepository.deleteById(id);
+        employeeRepository.deleteById(id);
         }
 
         @Override
