@@ -36,9 +36,10 @@ public class EmployeeController {
 
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
-        employeeService.updateEmployee(employeeDTO.getId(), employeeDTO);
+    public EmployeeDTO updateEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
+        return employeeService.updateEmployee(employeeDTO);
     }
+
 
     @GetMapping("/search-by-id/{id}")
     public EmployeeDTO searchEmployeeById(@PathVariable Long id) {
